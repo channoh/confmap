@@ -15,7 +15,7 @@ html, body {
 
 #map {
     min-height: 500px;
-    height: 50%;
+    height: 70%;
     width: 100%;
 }
 
@@ -26,6 +26,15 @@ html, body {
 .closedMark {
     color:red;
 }
+
+.container {
+    height: 100%;
+}
+
+// @media only screen
+// and (orientation: portrait) {
+    // #map {height: 80%}
+// }
 
 </style>
 </head>
@@ -68,7 +77,8 @@ function lookupHistory(loc) {
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
-        center: {lat: 41.902, lng: 12.496}
+        scrollwheel: false,
+        center: {lat: 20, lng: 0}
     });
     var geocoder = new google.maps.Geocoder();
 
@@ -124,6 +134,7 @@ function geocodeAddress(geocoder, map, address, title, label, open) {
 
             google.maps.event.addListener(marker, 'click', function() {
                 map.setCenter(marker.getPosition());
+                infowindow.open(map, marker);
             });
             infowindow.open(map, marker);
         } else {
