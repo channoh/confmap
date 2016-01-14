@@ -1,129 +1,133 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="bootstrap.min.css" rel="stylesheet">
+<title>Confmap</title>
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+#map {
+    min-height: 50%;
+    width: 100%;
+}
+
+.openMark {
+    color: blue;
+}
+
+.closedMark {
+    color:red;
+}
+
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+<div class="container">
+<div id="conferences" class="row">
+    <h2>Upcoming Conferences (sorted by submission date):</h2>
+    <div id="open" class="col-xs-6">
+        <h3>Open submissions<img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">:</h3>
+    </div>
+    <div id="closed" class="col-xs-6">
+        <h3>Closed submissions<img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">:</h3>
+    </div>
+</div>
+
 <script src="cfp.js"></script>
-<script type="text/javascript">
-google.load('visualization', '1.1', {packages: ['map']});
-// google.setOnLoadCallback(drawMap);
-// google.setOnLoadCallback(genConfDB);
-google.setOnLoadCallback(loadConfDB);
+<script src="jquery-2.1.3.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script>
+var green = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+var red = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+var blue = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
-function drawMap (tt) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Address');
-    data.addColumn('string', 'Location');
-    data.addColumn('string', 'Marker');
+var history = [];
+var markers = [];
+var infos = [];
 
-    data.addRows(tt);
-    // data.addRows([
-            // ['Barcelona, Spain', 'CGO 2016', 'blue'],
-            // ['Taiwan, Taipei', 'MICRO 2016', 'green'],
-            // ['Seoul, South Korea', 'ISCA 2016', 'red']
-            // ]);
-
-    var options = {
-        mapType: 'styledMap',
-        zoomLevel: 2,
-        showTip: true,
-        useMapTypeControl: true,
-        icons: {
-            green: {
-                normal: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                selected: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-           },
-            blue: {
-                normal: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                selected: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-           },
-            red: {
-                normal: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                selected: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
-             }
-        },
-        maps: {
-             // Your custom mapTypeId holding custom map styles.
-            styledMap: {
-                name: 'Styled Map', // This name will be displayed in the map type control.
-                styles: [
-                {   featureType: 'poi.attraction',
-                    stylers: [{color: '#fce8b2'}]
-                },
-                {   featureType: 'landscape',
-                    stylers: [{hue: '#259b24'}, {saturation: 10}, {lightness: -22}]
-                }
-                ]}
+function lookupHistory(loc) {
+    for (var i in history) {
+        if (history[i][0] == loc[0] && history[i][1] == loc[1]) {
+            return i;
         }
-    };
-
-    var map = new google.visualization.Map(document.getElementById('map_div'));
-
-    map.draw(data, options);
+    }
+    history.push(loc);
+    return -1;
 }
 
-function genConfDB() {
-    $.ajax({
-        type : "GET",
-        // url : 'http://www.wikicfp.com/cfp/servlet/tool.search?q='+conf+'&year=f',
-        url: "http://www.wikicfp.com/cfp/servlet/event.showlist?lownerid=84778&ltype=w",
-        dataType : "html",
-        success: function(data) {
-            var db = $(data).eq(25);
-            var conf = [];
-            var temp = [];
-            var i = 0;
-            $(db).find("table").eq(6).find("td")
-            .each(function(idx, val){
-                if (idx > 5 && $(val).text() != "") {
-                    if ($(val).text() == "N/A") {
-                        temp.push("");
-                    } else {
-                        temp.push($(val).text());
-                    }
-                    i++;
-                }
-                if (i == 6) {
-                    conf.push(temp);
-                    i = 0;
-                    temp = [];
-                }
-            });
-
-            conf.sort(function(a,b){return (new Date(a[4].split(" (")[0]) > new Date(b[4].split(" (")[0]))});
-            
-            var tt = [];
-            for (var i in conf) {
-                var tt_temp = "";
-                if (new Date(conf[i][4].split(" (")[0]) > new Date())
-                    tt_temp = [conf[i][3], conf[i][0], "blue"];
-                else
-                    tt_temp = [conf[i][3], conf[i][0], "red"];
-                tt.push(tt_temp);
-            }
-
-            drawMap(tt);
-            updateSubmissions(conf);
-        }
-
+function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 2,
+        center: {lat: 41.902, lng: 12.496}
     });
-}
+    var geocoder = new google.maps.Geocoder();
 
-function loadConfDB() {
-    var tt = [];
     for (var i in cfp) {
         var tt_temp = "";
-        if (new Date(cfp[i][4].split(" (")[0]) > new Date())
-            tt_temp = [cfp[i][3], cfp[i][0], "blue"];
-        else
-            tt_temp = [cfp[i][3], cfp[i][0], "red"];
-        tt.push(tt_temp);
+        if (cfp[i][3] != "") {
+            if (new Date(cfp[i][4].split(" (")[0]) > new Date())
+                geocodeAddress(geocoder, map, cfp[i][3], cfp[i][0], "", 1);
+            else
+                geocodeAddress(geocoder, map, cfp[i][3], cfp[i][0], "", 0);
+        }
     }
-    drawMap(tt);
     updateSubmissions(cfp);
+}
+
+function geocodeAddress(geocoder, resultsMap, address, title, label, open) {
+    geocoder.geocode({'address': address}, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+
+            var loc = results[0].geometry.location;
+
+            if (open) {
+                title = "<span class='openMark'>"+title+"</span>";
+                icon = blue;
+            } else  {
+                title = "<span class='closedMark'>"+title+"</span>";
+                icon = red;
+            }
+
+            // title = lookupHistory([loc.lat(), loc.lng(), title]);
+            var idx = lookupHistory([loc.lat(), loc.lng(), title]);
+            if (idx != -1) {
+                infos[idx].content += "<br>" + title;
+                markers[idx].icon = icon;
+                return;
+            }
+            // console.log(title);
+
+            var infowindow = new google.maps.InfoWindow({
+                content: title
+            });
+
+            var marker = new google.maps.Marker({
+                map: resultsMap,
+                label: label,
+                icon: icon,
+                zIndex: 0,
+                position: loc
+            });
+
+            markers.push(marker);
+            infos.push(infowindow);
+
+            // google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(resultsMap, marker);
+            // });
+        } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+        }
+    });
 }
 
 function updateSubmissions(d) {
@@ -147,25 +151,9 @@ function updateSubmissions(d) {
         }
     }
 }
-// genConfDB();
 
 </script>
-</head>
-<body>
-<div id="map_div" style="width: 100%"></div>
-<div class="container">
-<div id="conferences" class="row">
-    <h2>Upcoming Conferences (sorted by start date):</h2>
-    <div id="open" class="col-xs-6">
-        <h3>Open submissions<img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">:</h3>
-    </div>
-    <div id="closed" class="col-xs-6">
-        <h3>Closed submissions<img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">:</h3>
-    </div>
-</div>
-
-
-<script src="jquery-2.1.3.min.js"></script>
-<script src="bootstrap.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0iENAvap3xrHOeXgEiwrnGO1GiF24oyo&signed_in=true&callback=initMap"
+async defer></script>
 </body>
 </html>
