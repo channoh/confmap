@@ -14,7 +14,8 @@ html, body {
 }
 
 #map {
-    min-height: 50%;
+    min-height: 500px;
+    height: 50%;
     width: 100%;
 }
 
@@ -83,7 +84,7 @@ function initMap() {
     updateSubmissions(cfp);
 }
 
-function geocodeAddress(geocoder, resultsMap, address, title, label, open) {
+function geocodeAddress(geocoder, map, address, title, label, open) {
     geocoder.geocode({'address': address}, function(results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
 
@@ -111,7 +112,7 @@ function geocodeAddress(geocoder, resultsMap, address, title, label, open) {
             });
 
             var marker = new google.maps.Marker({
-                map: resultsMap,
+                map: map,
                 label: label,
                 icon: icon,
                 zIndex: 0,
@@ -121,9 +122,10 @@ function geocodeAddress(geocoder, resultsMap, address, title, label, open) {
             markers.push(marker);
             infos.push(infowindow);
 
-            // google.maps.event.addListener(marker, 'click', function() {
-              infowindow.open(resultsMap, marker);
-            // });
+            google.maps.event.addListener(marker, 'click', function() {
+                map.setCenter(marker.getPosition());
+            });
+            infowindow.open(map, marker);
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
         }
