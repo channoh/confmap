@@ -5,8 +5,9 @@ import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 import csv
+import json
 
-def getWikiCfp(url):
+def getWikiCfp(url, old):
     # url =  "http://www.wikicfp.com/cfp/servlet/event.showlist?lownerid=84778&ltype=w"
     web = urllib2.urlopen(url)
 
@@ -28,7 +29,8 @@ def getWikiCfp(url):
                 temp.append("")
             else:
                 temp.append(text)
-    print("%s") % (temp[0])
+    updated = "" if temp[0] == old else " ... updated"
+    print("%s%s") % (temp[0], updated)
     return temp
 
 
@@ -38,7 +40,7 @@ def compare(a, b):
 
 
 
-def getRecentEvent():
+def getRecentEvent(old_cfp):
     conferences = [
         ["ISCA",   "http://www.wikicfp.com/cfp/program?id=1683&s=ISCA&f=International%20Symposium%20on%20Computer%20Architecture"],
         ["ASPLOS", "http://www.wikicfp.com/cfp/program?id=242&s=ASPLOS&f=Architectural%20Support%20for%20Programming%20Languages%20and%20Operating%20Systems"],
@@ -52,17 +54,22 @@ def getRecentEvent():
         ]
 
     json = []
-    for conf in conferences:
-        json.append(getWikiCfp(conf[1]))
+    for i, conf in enumerate(conferences):
+        json.append(getWikiCfp(conf[1], old_cfp[i][0]))
 
     json.sort(compare)
-
-    json_str = str(json)
-    json_str = json_str.replace("[[", "[\n[").replace("]]", "]\n]").replace("], ","],\n")
-    print(json_str)
-    with open('cfp.js', 'w') as f:
-        f.write("var cfp = "+json_str+";")
+    return json
 
 
-getRecentEvent()
-# getWikicfp()
+if __name__ == "__main__":
+    with open ('cfp.js', 'r') as f:
+        old_cfp = f.read().replace("var cfp = ", "old_cfp = ").replace(";", "").replace("\n", "")
+        exec(old_cfp)   ## gen array 'old_cfp'
+        new_cfp = getRecentEvent(old_cfp)
+
+        cfp_str = str(new_cfp)
+        cfp_str = cfp_str.replace("[[", "[\n[").replace("]]", "]\n]").replace("], ","],\n")
+        ## print(cfp_str)
+        with open('cfp.js', 'w') as f:
+            f.write("var cfp = "+cfp_str+";")
+
