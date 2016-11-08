@@ -68,7 +68,7 @@ var markers = [];
 var infos = [];
 
 function lookupHistory(loc) {
-    for (var i=0; i<history.length - 1; i++) {
+    for (var i=0; history[i] != null; i++) {
         if (history[i][0] == loc[0] && history[i][1] == loc[1]) {
             return i;
         }
