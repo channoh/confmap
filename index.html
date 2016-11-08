@@ -68,12 +68,13 @@ var markers = [];
 var infos = [];
 
 function lookupHistory(loc) {
-    for (var i in history) {
+    for (var i=0; i<history.length - 1; i++) {
         if (history[i][0] == loc[0] && history[i][1] == loc[1]) {
             return i;
         }
     }
-    history.push(loc);
+    // history.push(loc);
+    Array.prototype.push.apply(history, loc);
     return -1;
 }
 
@@ -88,8 +89,9 @@ function initMap() {
     for (var i in cfp) {
         var tt_temp = "";
         if (cfp[i][3] != "") {
-            if (new Date(cfp[i][4].split(" (")[0]) > new Date())
+            if (new Date(cfp[i][4].split(" (")[0]) > new Date()) {
                 geocodeAddress(geocoder, map, cfp[i][3], cfp[i][0], "", 1);
+            }
             else
                 geocodeAddress(geocoder, map, cfp[i][3], cfp[i][0], "", 0);
         }
