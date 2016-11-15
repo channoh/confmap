@@ -63,18 +63,17 @@ var green = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
 var red = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
 var blue = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
-var history = [];
-var markers = [];
-var infos = [];
+var History = [];
+var Markers = [];
+var Infos = [];
 
 function lookupHistory(loc) {
-    for (var i=0; history[i] != null; i++) {
-        if (history[i][0] == loc[0] && history[i][1] == loc[1]) {
+    for (var i in History) {
+        if ((History[i][0] == loc[0]) && (History[i][1] == loc[1])) {
             return i;
         }
     }
-    // history.push(loc);
-    Array.prototype.push.apply(history, loc);
+    History.push(loc);
     return -1;
 }
 
@@ -96,6 +95,7 @@ function initMap() {
                 geocodeAddress(geocoder, map, cfp[i][3], cfp[i][0], "", 0);
         }
     }
+
     updateSubmissions(cfp);
 }
 
@@ -113,14 +113,14 @@ function geocodeAddress(geocoder, map, address, title, label, open) {
                 icon = red;
             }
 
-            // title = lookupHistory([loc.lat(), loc.lng(), title]);
             var idx = lookupHistory([loc.lat(), loc.lng(), title]);
             if (idx != -1) {
-                infos[idx].content += "<br>" + title;
-                markers[idx].icon = icon;
-                return;
+                Infos[idx].content += "<br>" + title;
+                Markers[idx].icon = icon;
+                title = Infos[idx].content;
+                Infos[idx].close()
+                // return;
             }
-            // console.log(title);
 
             var infowindow = new google.maps.InfoWindow({
                 content: title
@@ -134,14 +134,17 @@ function geocodeAddress(geocoder, map, address, title, label, open) {
                 position: loc
             });
 
-            markers.push(marker);
-            infos.push(infowindow);
+            if (idx == -1) {
+                Markers.push(marker);
+                Infos.push(infowindow);
+            }
 
             google.maps.event.addListener(marker, 'click', function() {
-                map.setCenter(marker.getPosition());
-                infowindow.open(map, marker);
-            });
+                    map.setCenter(marker.getPosition());
+                    infowindow.open(map, marker);
+                    });
             infowindow.open(map, marker);
+
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
         }
