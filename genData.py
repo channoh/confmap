@@ -36,7 +36,12 @@ def getWikiCfp(url, old):
 
 
 def compare(a, b):
-    return (datetime.strptime(a[4].split(" (")[0], "%b %d, %Y") > datetime.strptime(b[4].split(" (")[0], "%b %d, %Y"))
+    try:
+        ret = (datetime.strptime(a[4].split(" (")[0], "%b %d, %Y") > datetime.strptime(b[4].split(" (")[0], "%b %d, %Y"))
+    except:
+        ret = 1;
+    return ret;
+
 
 
 
