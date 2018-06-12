@@ -140,10 +140,13 @@ function geocodeAddress(geocoder, map, address, title, label, open) {
             }
 
             google.maps.event.addListener(marker, 'click', function() {
-                    map.setCenter(marker.getPosition());
-                    infowindow.open(map, marker);
-                    });
-            infowindow.open(map, marker);
+                // map.setCenter(marker.getPosition());
+                infowindow.open(map, marker);
+            });
+
+            if (open) {
+                infowindow.open(map, marker);
+            }
 
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
