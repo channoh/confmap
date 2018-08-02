@@ -8,5 +8,7 @@ var cfp = [
 ['LCTES 2018', 'Languages, Compilers, and Tools for Embedded Systems', 'Jun 19, 2018 - Jun 20, 2018', 'Philadelphia, PA', 'Feb 23, 2018 (Feb 16, 2018)'],
 ['PACT 2018', 'The 27th International Conference on Parallel and Compilation Techniques (PACT)', 'Sep 27, 2018 - Oct 1, 2018', 'Cyprus', 'TBD'],
 ['ISMM 2018', 'International Symposium on Memory Management', 'Jun 18, 2018 - Jun 18, 2018', 'Philadelphia, Pennsylvania, USA', 'Feb 15, 2018'],
-['FAST 2019', '17th USENIX Conference on File and Storage Technologies', 'Feb 25, 2019 - Feb 28, 2019', 'Boston, MA, USA', 'Sep 26, 2018']
+['FAST 2019', '17th USENIX Conference on File and Storage Technologies', 'Feb 25, 2019 - Feb 28, 2019', 'Boston, MA, USA', 'Sep 26, 2018'],
+['CVPR 2019', 'Computer Vision and Pattern Recognition', 'Jun 15, 2019 - Jun 21, 2019', 'Long Beach, CA', 'Nov 16, 2018'],
+['NIPS 2018', 'The Thirty-second Annual Conference on Neural Information Processing Systems', 'Dec 3, 2018 - Dec 8, 2018', 'Montr\xc3\xa9al, CANADA', 'TBD']
 ];

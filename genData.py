@@ -57,6 +57,8 @@ def getRecentEvent(old_cfp):
         ["PACT",   "http://www.wikicfp.com/cfp/program?id=2291&s=PACT&f=International%20Conference%20on%20Parallel%20Architectures%20and%20Compilation%20Techniques"],
         ["ISMM",   "http://www.wikicfp.com/cfp/program?id=1730&s=ISMM&f=International%20Symposium%20on%20Memory%20Management"],
         ["FAST",   "http://www.wikicfp.com/cfp/program?id=1011&s=FAST&f=File%20and%20Storage%20Technologies"],
+        ["CVPR",   "http://www.wikicfp.com/cfp/program?id=628&s=CVPR&f=Computer%20Vision%20and%20Pattern%20Recognition"],
+        ["NIPS",   "http://www.wikicfp.com/cfp/program?id=2212&s=NIPS&f=Neural%20Information%20Processing%20Systems"],
         ]
 
     json = []
